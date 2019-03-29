@@ -9,6 +9,7 @@ import (
 	"shuZhiNet/model/student"
 	"shuZhiNet/service/auth"
 	"shuZhiNet/service/crawl"
+	"shuZhiNet/service/engage"
 	"shuZhiNet/service/login"
 )
 
@@ -19,8 +20,6 @@ func allowOrigin(w http.ResponseWriter) http.ResponseWriter {
 	return w
 }
 
-// 登录 存贮用户登陆态 返回给前端姓名和JWT
-// TODO: 前端姓名获取并不一定成功
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	w = allowOrigin(w)
 	var input struct {
@@ -45,36 +44,23 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 func engageHandler(w http.ResponseWriter, r *http.Request) {
 	w = allowOrigin(w)
+	// to zd: 沿用个屁
+	// （请zd看到后删掉）
 	var input struct {
-		ID   string `json:"id"`
-		hdid string `json:"hdid"`
-		//nmd wsm 手机号码要取这个名，沿用了
-		shouJhm string `json:"shouJhm"`
-		email   string `json:"email"`
-		Token   string `json:"token"`
+		ActivityId  string `json:"activity_id"`
+		PhoneNumber string `json:"phone_number"`
+		MailAddress string `json:"mail_address"`
 	}
 	body, _ := ioutil.ReadAll(r.Body)
 	json.Unmarshal(body, &input)
-	Loggedin := auth.AuthToken(input.ID, input.Token)
-	if Loggedin {
-		student, _ := student.Get(input.ID)
-		var cookies []*http.Cookie
-		cookies = append(cookies, &student.Cookie)
-		//shuZhiNetUrl, _ := url.Parse("http://www.sz.shu.edu.cn")
-		var jar http.CookieJar
-		//jar.SetCookies(shuZhiNetUrl, cookies)
-		client := http.Client{Jar: jar}
-		fmt.Println(input.ID)
-		fmt.Println(input.shouJhm)
-		fmt.Println(input.Token)
-		string1 := "http://www.sz.shu.edu.cn/api/HuoDong/HuoDBMXX/GetHuoDBM?hdid=" + input.hdid +
-			"&shouJhm=" + input.shouJhm + "&email=" + input.email
-		fmt.Println(string1)
-		response, _ := client.Get(string1)
-		res, _ := ioutil.ReadAll(response.Body)
-		fmt.Println(string(res))
+	tokenString := r.Header.Get("Authorization")[7:]
+	student, err := auth.GetStudent(tokenString)
+	fmt.Println(student)
+	if err != nil {
+		w.WriteHeader(403)
+		return
 	}
-
+	engage.Engage(student, input.ActivityId, input.PhoneNumber, input.MailAddress)
 }
 
 func activitiesHandler(w http.ResponseWriter, r *http.Request) {

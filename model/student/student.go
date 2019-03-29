@@ -7,9 +7,9 @@ import (
 )
 
 type Student struct {
-	Id     string
-	Name   string
-	Cookie http.Cookie
+	Id      string
+	Name    string
+	Cookies []*http.Cookie
 }
 
 func marshal(student Student) []byte {

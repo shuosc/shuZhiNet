@@ -25,8 +25,8 @@ func Login(username string, password string) student.Student {
 	client.PostForm("http://www.sz.shu.edu.cn/api/Sys/Users/Login", authData)
 	shuZhiNetUrl, _ := url.Parse("http://www.sz.shu.edu.cn")
 	return student.Student{
-		Id:     username,
-		Name:   getStudentName(client.Jar),
-		Cookie: *jar.Cookies(shuZhiNetUrl)[0],
+		Id:      username,
+		Name:    getStudentName(client.Jar),
+		Cookies: jar.Cookies(shuZhiNetUrl),
 	}
 }
