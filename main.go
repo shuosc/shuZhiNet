@@ -44,8 +44,6 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 func engageHandler(w http.ResponseWriter, r *http.Request) {
 	w = allowOrigin(w)
-	// to zd: 沿用个屁
-	// （请zd看到后删掉）
 	var input struct {
 		ActivityId  string `json:"activity_id"`
 		PhoneNumber string `json:"phone_number"`
