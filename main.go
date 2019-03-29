@@ -72,7 +72,7 @@ func engageHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(string1)
 		response, _ := client.Get(string1)
 		res, _ := ioutil.ReadAll(response.Body)
-		fmt.Println(res)
+		fmt.Println(string(res))
 	}
 
 }
