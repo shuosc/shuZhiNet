@@ -39,7 +39,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(output.StudentName, "logged in.")
 	outputJSON, _ := json.Marshal(output)
 	w.Write(outputJSON)
-	fmt.Println(crawl.FetchActivitiesByStudent())
+	//fmt.Println(crawl.FetchActivitiesByStudent())
 }
 
 func engageHandler(w http.ResponseWriter, r *http.Request) {
