@@ -21,6 +21,6 @@ URL: $BACKEND_ADDRESS/engage
 
 method: POST
 
-head: Authorization: Token1=$JWT_TOKEN
+head: Authorization: Bearer $JWT_TOKEN
 
 body: {"activity_id": "活动id","phone_number": " ","mail_address": " "}
