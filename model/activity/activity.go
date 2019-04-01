@@ -7,6 +7,7 @@ import (
 )
 
 type Activity struct {
+	TypeId     string    `json:"typeid"`
 	Id         string    `json:"id"`
 	Title      string    `json:"title"`
 	Leader     string    `json:"leader"`

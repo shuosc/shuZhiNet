@@ -11,7 +11,7 @@ URL: $BACKEND_ADDRESS/activities
 
 method: GET
 
-response:\[{"id": "活动id","title": "活动标题","leader": "学院",
+response:\[{"typeid": "活动类型","id": "活动id","title": "活动标题","leader": "学院",
             "address": "活动地点", "start_time": "开始时间",
             "end_time": "结束时间","sign_up_time": "开始报名时间"
              },
