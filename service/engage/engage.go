@@ -10,6 +10,7 @@ import (
 
 func Engage(student student.Student, activityId string, phoneNumber string, mailAddress string) {
 	jar, _ := cookiejar.New(nil)
+	fmt.Println(student)
 	shuZhiNetUrl, _ := url.Parse("http://www.sz.shu.edu.cn")
 	jar.SetCookies(shuZhiNetUrl, student.Cookies)
 	client := http.Client{Jar: jar}

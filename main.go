@@ -12,6 +12,7 @@ func main() {
 	http.HandleFunc("/activities", activityhandler.ListHandler)
 	http.HandleFunc("/engage", activityhandler.EngageHandler)
 	http.HandleFunc("/cancel", activityhandler.CancelHandle)
+	http.HandleFunc("/myactivities", activityhandler.MylistHandler)
 	err := http.ListenAndServe(":8000", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)

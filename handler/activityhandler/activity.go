@@ -16,6 +16,21 @@ func ListHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(response)
 }
 
+func MylistHandler(w http.ResponseWriter, r *http.Request) {
+	tokenString := r.Header.Get("Authorization")[7:]
+	fmt.Println(tokenString)
+	student, err := auth.GetStudent(tokenString)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(403)
+	}
+	fmt.Println(student)
+	activityIdList, s:= crawl.FetchMyActivity(student)
+	fmt.Println(s,activityIdList)
+	response, _ :=json.Marshal(activityIdList)
+	w.Write(response)
+}
+
 func EngageHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		ActivityId  string `json:"activity_id"`
@@ -26,7 +41,6 @@ func EngageHandler(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(body, &input)
 	tokenString := r.Header.Get("Authorization")[7:]
 	student, err := auth.GetStudent(tokenString)
-	fmt.Println(student)
 	if err != nil {
 		w.WriteHeader(403)
 		return
