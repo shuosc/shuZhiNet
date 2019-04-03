@@ -29,7 +29,12 @@ func unmarshal(binaryData []byte) Activity {
 }
 
 func Save(activity Activity) {
-	infrastructure.Redis.SAdd("Activity", marshal(activity))
+	infrastructure.Redis.SAdd("Activity_"+activity.Id, marshal(activity))
+}
+
+func Get(id string) (Activity, error) {
+	binaryData, err := infrastructure.Redis.Get("Activity_" + id).Result()
+	return unmarshal([]byte(binaryData)), err
 }
 
 func All() []Activity {

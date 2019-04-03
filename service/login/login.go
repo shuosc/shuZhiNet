@@ -1,6 +1,7 @@
 package login
 
 import (
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"net/http"
 	"net/http/cookiejar"
@@ -24,6 +25,7 @@ func Login(username string, password string) student.Student {
 	authData.Add("userName", username)
 	client.PostForm("http://www.sz.shu.edu.cn/api/Sys/Users/Login", authData)
 	shuZhiNetUrl, _ := url.Parse("http://www.sz.shu.edu.cn")
+	fmt.Print(username, " logged in.")
 	return student.Student{
 		Id:      username,
 		Name:    getStudentName(client.Jar),
