@@ -31,13 +31,13 @@ func FetchActivitiesByStudent() []activity.Activity {
 	client := http.Client{}
 	response, _ := client.Get("http://www.sz.shu.edu.cn/")
 	content, _ := ioutil.ReadAll(response.Body)
-	var HDList []activity.Activity
-	HDType := 0
+	var activityList []activity.Activity
+	activityType := 0
 	reader := strings.NewReader(string(content))
 	doc, _ := goquery.NewDocumentFromReader(reader)
 	doc.Find(".ActiveScroll").Each(
 		func(_ int, selection *goquery.Selection) {
-			HDType = HDType + 1
+			activityType++
 			selection.Find(".ActiveScroll_bdli").Each(
 				func(_ int, selection *goquery.Selection) {
 					href, _ := selection.Find(".ActiveScroll_bdli > a").Attr("href")
@@ -50,7 +50,7 @@ func FetchActivitiesByStudent() []activity.Activity {
 					endTime, _ := time.Parse("2006-01-02  15:04", info.Find(".icon_timeb").Text()[18:])
 					signUpTime, _ := time.Parse("2006-01-02  15:04", info.Find(".TimeEnd").Text()[15:])
 					thisActivity := activity.Activity{
-						TypeId:     strconv.Itoa(HDType),
+						TypeId:     strconv.Itoa(activityType),
 						Id:         string(hdid),
 						Title:      info.Find(".ActiveTitle").Text(),
 						Leader:     info.Find(".icon_leader").Text(),
@@ -59,33 +59,45 @@ func FetchActivitiesByStudent() []activity.Activity {
 						EndTime:    endTime,
 						SignUpTime: signUpTime,
 					}
-					serilized, _ := json.Marshal(thisActivity)
-					infrastructure.Redis.Set("Activity:"+string(hdid), serilized, 0)
-					HDList = append(HDList, thisActivity)
+					serialized, _ := json.Marshal(thisActivity)
+					infrastructure.Redis.Set("Activity:"+string(hdid), serialized, 0)
+					activity.Save(thisActivity)
+					activityList = append(activityList, thisActivity)
 				})
 		})
-	return HDList
+	return activityList
 }
 
-//得到学生已经参与的活动
-func FetchMyActivity(student student.Student) ([]string, []string) {
-	var cancelIdList []string
+type ParticipatedActivity struct {
+	activity.Activity
+	ParticipateInfoId string `json:"participate_info_id"`
+}
+
+func FetchParticipatingActivityIds(student student.Student) []ParticipatedActivity {
 	jar, _ := cookiejar.New(nil)
-	cancelListURL := "http://www.sz.shu.edu.cn/api/HuoDong/HuoDXX/GetHuoDBMXX?pageSize=3&pageNumber=1" /**/
-	MyActivity, _ := url.Parse(cancelListURL)
-	jar.SetCookies(MyActivity, student.Cookies)
+	// todo: 处理多页
+	participatingURL := "http://www.sz.shu.edu.cn/api/HuoDong/HuoDXX/GetHuoDBMXX?pageSize=30&pageNumber=1"
+	participatingURLObject, _ := url.Parse(participatingURL)
+	jar.SetCookies(participatingURLObject, student.Cookies)
 	client := http.Client{Jar: jar}
-	response, _ := client.Get(cancelListURL)
-	content, _ := ioutil.ReadAll(response.Body)
-	reader := strings.NewReader(string(content))
-	doc, _ := goquery.NewDocumentFromReader(reader)
-	reDBid := regexp.MustCompile(`XXId":([0-9]*)`)
-	DBid := reDBid.FindAllString(doc.Text(), -1)
-	reActivityId := regexp.MustCompile(`"Id":([0-9]*)`)
-	activityId := reActivityId.FindAllString(doc.Text(), -1)
-	for i := 0; i < len(DBid); i++ {
-		activityId[i] = activityId[i][5:]
-		cancelIdList = append(cancelIdList, DBid[i][6:])
+	response, _ := client.Get(participatingURL)
+	responseBody, _ := ioutil.ReadAll(response.Body)
+	var responseJson struct {
+		Data struct {
+			ActivityInfo []struct {
+				ParticipateInfoId int `json:"HuoDBMXXId"`
+				Id                int `json:"Id"`
+			} `json:"huodxx"`
+		} `json:"data"`
 	}
-	return activityId, cancelIdList
+	json.Unmarshal(responseBody, &responseJson)
+	var result []ParticipatedActivity
+	for _, activityJson := range responseJson.Data.ActivityInfo {
+		activityObject, _ := activity.Get(strconv.Itoa(activityJson.Id))
+		result = append(result, ParticipatedActivity{
+			Activity:          activityObject,
+			ParticipateInfoId: strconv.Itoa(activityJson.ParticipateInfoId),
+		})
+	}
+	return result
 }

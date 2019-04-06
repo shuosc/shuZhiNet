@@ -1,33 +1,36 @@
-package activityhandler
+package activityHandler
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"shuZhiNet/model/activity"
 	"shuZhiNet/service/auth"
+	"shuZhiNet/service/cancel"
 	"shuZhiNet/service/crawl"
 	"shuZhiNet/service/engage"
 )
 
-func ListHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Visited")
+func ActivityHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	resultObject, _ := activity.Get(id)
+	response, _ := json.Marshal(resultObject)
+	w.Write(response)
+}
+
+func AllActivitiesHandler(w http.ResponseWriter, r *http.Request) {
 	response, _ := json.Marshal(crawl.FetchActivitiesByStudent())
 	w.Write(response)
 }
 
-func MylistHandler(w http.ResponseWriter, r *http.Request) {
+func ParticipatingActivitiesHandler(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")[7:]
-	fmt.Println(tokenString)
 	student, err := auth.GetStudent(tokenString)
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(403)
 	}
-	fmt.Println(student)
-	activityIdList, s:= crawl.FetchMyActivity(student)
-	fmt.Println(s,activityIdList)
-	response, _ :=json.Marshal(activityIdList)
+	activityList := crawl.FetchParticipatingActivityIds(student)
+	response, _ := json.Marshal(activityList)
 	w.Write(response)
 }
 
@@ -52,7 +55,6 @@ func CancelHandle(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		ActivityId string `json:"activity_id"`
 	}
-	var cancelId string
 	body, _ := ioutil.ReadAll(r.Body)
 	json.Unmarshal(body, &input)
 	tokenString := r.Header.Get("Authorization")[7:]
@@ -60,11 +62,10 @@ func CancelHandle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(403)
 	}
-	activityIdList, cancelIdList := crawl.FetchMyActivity(student)
-	for i := 0; i < len(activityIdList); i++ {
-		if activityIdList[i] == input.ActivityId {
-			cancelId = cancelIdList[i]
+	participatingActivities := crawl.FetchParticipatingActivityIds(student)
+	for _, activityObject := range participatingActivities {
+		if activityObject.Id == input.ActivityId {
+			cancel.Cancel(student, activityObject.ParticipateInfoId)
 		}
 	}
-	engage.Cancel(student, cancelId)
 }

@@ -1,8 +1,7 @@
-package studenthandler
+package studentHandler
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"shuZhiNet/model/student"
@@ -25,8 +24,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	output.StudentName = loginStudent.Name
 	output.Token = auth.GenerateJWT(loginStudent)
 	student.Save(loginStudent)
-	fmt.Println(output.StudentName, "logged in.")
 	outputJSON, _ := json.Marshal(output)
 	w.Write(outputJSON)
-	//fmt.Println(crawl.FetchActivitiesByStudent())
 }

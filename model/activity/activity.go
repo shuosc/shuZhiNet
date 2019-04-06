@@ -7,7 +7,7 @@ import (
 )
 
 type Activity struct {
-	TypeId     string    `json:"typeid"`
+	TypeId     string    `json:"type_id"`
 	Id         string    `json:"id"`
 	Title      string    `json:"title"`
 	Leader     string    `json:"leader"`
@@ -29,19 +29,10 @@ func unmarshal(binaryData []byte) Activity {
 }
 
 func Save(activity Activity) {
-	infrastructure.Redis.SAdd("Activity_"+activity.Id, marshal(activity))
+	infrastructure.Redis.Set("Activity_"+activity.Id, marshal(activity), 0)
 }
 
 func Get(id string) (Activity, error) {
 	binaryData, err := infrastructure.Redis.Get("Activity_" + id).Result()
 	return unmarshal([]byte(binaryData)), err
-}
-
-func All() []Activity {
-	var result []Activity
-	allBinaryData, _ := infrastructure.Redis.SMembers("Activity").Result()
-	for _, data := range allBinaryData {
-		result = append(result, unmarshal([]byte(data)))
-	}
-	return result
 }
