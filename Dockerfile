@@ -8,5 +8,5 @@ FROM alpine
 MAINTAINER longfangsong@icloud.com
 COPY --from=builder /go/src/shuZhiNet /shuZhiNet
 WORKDIR /
-CMD ["export PORT=8000;","./shuZhiNet"]
+CMD ./shuZhiNet
 EXPOSE 8000
