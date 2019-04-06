@@ -1,0 +1,11 @@
+services:
+  - docker
+jobs:
+  include:
+    - stage: build
+      language: minimal
+      script:
+        - docker build . -t shu_zhi_net-backend
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker tag shuZhiNet-backend $DOCKER_USERNAME/shu_zhi_net-backend
+        - docker push $DOCKER_USERNAME/shu_zhi_net-backend
