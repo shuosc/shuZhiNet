@@ -1,4 +1,4 @@
-package engage
+package activity
 
 import (
 	"net/http"
@@ -7,12 +7,12 @@ import (
 	"shuZhiNet/model/student"
 )
 
-func Engage(student student.Student, activityId string, phoneNumber string, mailAddress string) {
+func TakePartInActivity(student student.Student, activityId string, phoneNumber string, mailAddress string) {
 	jar, _ := cookiejar.New(nil)
 	shuZhiNetUrl, _ := url.Parse("http://www.sz.shu.edu.cn")
 	jar.SetCookies(shuZhiNetUrl, student.Cookies)
 	client := http.Client{Jar: jar}
 	getURl := "http://www.sz.shu.edu.cn/api/HuoDong/HuoDBMXX/GetHuoDBM?hdid=" + activityId +
 		"&shouJhm=" + phoneNumber + "&email=" + mailAddress
-	client.Get(getURl)
+	_, _ = client.Get(getURl)
 }

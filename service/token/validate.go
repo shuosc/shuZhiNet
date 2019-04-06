@@ -1,4 +1,4 @@
-package auth
+package token
 
 import (
 	"github.com/dgrijalva/jwt-go"
@@ -11,7 +11,7 @@ func GetStudent(tokenString string) (student.Student, error) {
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 	if err != nil {
-		return student.Student{}, nil
+		return student.Student{}, err
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	studentId := claims["studentId"].(string)

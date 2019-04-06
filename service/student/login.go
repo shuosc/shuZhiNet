@@ -1,4 +1,4 @@
-package login
+package student
 
 import (
 	"github.com/PuerkitoBio/goquery"
@@ -16,17 +16,20 @@ func getStudentName(jar http.CookieJar) string {
 	return name
 }
 
-func Login(username string, password string) student.Student {
+func Login(username string, password string) (student.Student, error) {
 	jar, _ := cookiejar.New(nil)
 	client := http.Client{Jar: jar}
 	authData := url.Values{}
 	authData.Add("password", password)
 	authData.Add("userName", username)
-	client.PostForm("http://www.sz.shu.edu.cn/api/Sys/Users/Login", authData)
+	_, err := client.PostForm("http://www.sz.shu.edu.cn/api/Sys/Users/Login", authData)
+	if err != nil {
+		return student.Student{}, nil
+	}
 	shuZhiNetUrl, _ := url.Parse("http://www.sz.shu.edu.cn")
 	return student.Student{
 		Id:      username,
 		Name:    getStudentName(client.Jar),
 		Cookies: jar.Cookies(shuZhiNetUrl),
-	}
+	}, nil
 }

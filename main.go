@@ -3,18 +3,17 @@ package main
 import (
 	"log"
 	"net/http"
-	"shuZhiNet/handler/activityHandler"
-	"shuZhiNet/handler/studentHandler"
+	"os"
+	"shuZhiNet/handler"
 )
 
 func main() {
-	http.HandleFunc("/login", studentHandler.LoginHandler)
-	http.HandleFunc("/all-activities", activityHandler.AllActivitiesHandler)
-	http.HandleFunc("/participating-activities", activityHandler.ParticipatingActivitiesHandler)
-	http.HandleFunc("/activity", activityHandler.ActivityHandler)
-	http.HandleFunc("/engage", activityHandler.EngageHandler)
-	http.HandleFunc("/cancel", activityHandler.CancelHandle)
-	err := http.ListenAndServe(":8000", nil)
+	http.HandleFunc("/login", handler.LoginHandler)
+	http.HandleFunc("/all-activities", handler.AllActivitiesHandler)
+	http.HandleFunc("/participating-activities", handler.ParticipatingActivitiesHandler)
+	http.HandleFunc("/take-part", handler.TakePartHandler)
+	http.HandleFunc("/opt-out", handler.OptOutHandle)
+	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

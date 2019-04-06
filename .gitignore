@@ -89,3 +89,4 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 .idea
+/gin-bin
