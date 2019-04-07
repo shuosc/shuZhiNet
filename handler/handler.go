@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"shuZhiNet/model/student"
 	ActivityService "shuZhiNet/service/activity"
+	"shuZhiNet/service/scholarship"
 	StudentService "shuZhiNet/service/student"
 	"shuZhiNet/service/token"
 )
@@ -73,7 +74,7 @@ func TakePartHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(studentObject.Name, "take part in activity", input.ActivityId)
 }
 
-func OptOutHandle(w http.ResponseWriter, r *http.Request) {
+func OptOutHandler(w http.ResponseWriter, r *http.Request) {
 	studentObject, err := getStudent(r)
 	if err != nil {
 		w.WriteHeader(403)
@@ -92,4 +93,20 @@ func OptOutHandle(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+}
+
+func ApplyScholarshipHandler(w http.ResponseWriter, r *http.Request) {
+	studentObject, err := getStudent(r)
+	if err != nil {
+		w.WriteHeader(403)
+		return
+	}
+	var input struct {
+		ScholarshipType int    `json:"scholarship_type"`
+		Qualifications  []int  `json:"qualifications"`
+		Reason          string `json:"reason"`
+	}
+	body, _ := ioutil.ReadAll(r.Body)
+	_ = json.Unmarshal(body, &input)
+	scholarship.Apply(studentObject, input.ScholarshipType, input.Qualifications, input.Reason)
 }

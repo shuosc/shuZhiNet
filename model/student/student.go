@@ -3,6 +3,8 @@ package student
 import (
 	"encoding/json"
 	"net/http"
+	"net/http/cookiejar"
+	"net/url"
 	"shuZhiNet/infrastructure"
 )
 
@@ -30,4 +32,11 @@ func Save(student Student) {
 func Get(id string) (Student, error) {
 	binaryData, err := infrastructure.Redis.Get("Student_" + id).Result()
 	return unmarshal([]byte(binaryData)), err
+}
+
+func (student Student) Client() http.Client {
+	jar, _ := cookiejar.New(nil)
+	cancelURL, _ := url.Parse("http://www.sz.shu.edu.cn")
+	jar.SetCookies(cancelURL, student.Cookies)
+	return http.Client{Jar: jar}
 }
