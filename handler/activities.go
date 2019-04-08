@@ -59,14 +59,10 @@ func OptOutHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(403)
 		return
 	}
-	var input struct {
-		ActivityId string `json:"activity_id"`
-	}
-	body, _ := ioutil.ReadAll(r.Body)
-	_ = json.Unmarshal(body, &input)
+	id := r.URL.Query().Get("id")
 	participatingActivities := activity.FetchParticipatingActivities(studentObject)
 	for _, activityObject := range participatingActivities {
-		if activityObject.Id == input.ActivityId {
+		if activityObject.Id == id {
 			activity.OptOutActivity(studentObject, activityObject.ParticipateInfoId)
 			log.Println(studentObject.Name, "opt out of activity", activityObject.Id)
 			break
