@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -42,7 +43,11 @@ func AllActivitiesHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getStudent(r *http.Request) (student.Student, error) {
-	tokenString := r.Header.Get("Authorization")[7:]
+	tokenInHeader := r.Header.Get("Authorization")
+	if tokenInHeader == "" {
+		return student.Student{}, errors.New("no token given")
+	}
+	tokenString := tokenInHeader[7:]
 	return token.GetStudent(tokenString)
 }
 

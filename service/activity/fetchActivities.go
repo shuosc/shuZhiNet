@@ -2,6 +2,7 @@ package activity
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
 	"net/http"
@@ -72,15 +73,40 @@ func FetchParticipatingActivities(student student.Student) []ParticipatedActivit
 	var responseJson struct {
 		Data struct {
 			ActivityInfo []struct {
-				ParticipateInfoId int `json:"HuoDBMXXId"`
-				Id                int `json:"Id"`
+				ParticipateInfoId int    `json:"HuoDBMXXId"`
+				Id                int    `json:"Id"`
+				Title             string `json:"HuoDMC"`
+				Address           string `json:"HuoDDD"`
+				StartTime         string `json:"HuoDKSSJ"`
+				EndTime           string `json:"HuoDJSSJ"`
+				SignUpTime        string `json:"CreatedOn"`
+				TypeName          string `json:"HuoDLBName"`
+				Leader            string `json:"ZuZMC"`
 			} `json:"huodxx"`
 		} `json:"data"`
 	}
 	_ = json.Unmarshal(responseBody, &responseJson)
 	var result []ParticipatedActivity
 	for _, activityJson := range responseJson.Data.ActivityInfo {
-		activityObject, _ := activity.Get(strconv.Itoa(activityJson.Id))
+		activityObject, err := activity.Get(strconv.Itoa(activityJson.Id))
+		if err != nil {
+			fmt.Println(activityJson)
+			startTime, _ := time.Parse("2006-01-02T15:04:05", activityJson.StartTime)
+			endTime, _ := time.Parse("2006-01-02T15:04:05", activityJson.EndTime)
+			signUpTime, _ := time.Parse("2006-01-02T15:04:05", activityJson.SignUpTime)
+			fmt.Println(startTime, endTime, signUpTime)
+			activityObject = activity.Activity{
+				Id:         strconv.Itoa(activityJson.Id),
+				TypeId:     activity.GetTypeByName(activityJson.TypeName).Id,
+				Title:      activityJson.Title,
+				Leader:     activityJson.Leader,
+				Address:    activityJson.Address,
+				StartTime:  startTime,
+				EndTime:    endTime,
+				SignUpTime: signUpTime,
+			}
+			activity.Save(activityObject)
+		}
 		result = append(result, ParticipatedActivity{
 			Activity:          activityObject,
 			ParticipateInfoId: strconv.Itoa(activityJson.ParticipateInfoId),
