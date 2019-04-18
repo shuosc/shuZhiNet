@@ -55,3 +55,7 @@ func ScholarShipsHandler(w http.ResponseWriter, r *http.Request) {
 		ApplyScholarshipHandler(w, r)
 	}
 }
+
+func PingPongHandler(w http.ResponseWriter, r *http.Request) {
+	_, _ = w.Write([]byte("pong"))
+}
