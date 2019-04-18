@@ -5,7 +5,7 @@ jobs:
     - stage: build
       language: minimal
       script:
-        - docker build . -t shu_zhi_net-backend
+        - docker build . -t shu-zhi-net-backend
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker tag shu_zhi_net-backend $DOCKER_USERNAME/shu_zhi_net-backend
-        - docker push $DOCKER_USERNAME/shu_zhi_net-backend
+        - docker tag shu-zhi-net-backend $DOCKER_USERNAME/shu-zhi-net-backend
+        - docker push $DOCKER_USERNAME/shu-zhi-net-backend
