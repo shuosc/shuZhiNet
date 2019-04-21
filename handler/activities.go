@@ -12,8 +12,15 @@ import (
 )
 
 func AllActivitiesHandler(w http.ResponseWriter, r *http.Request) {
-	response, _ := json.Marshal(activity.FetchActivities())
-	_, _ = w.Write(response)
+	activityList := activity.FetchActivities()
+	// Go is kidding
+	// @see https://github.com/golang/go/issues/26866
+	if len(activityList) == 0 {
+		_, _ = w.Write([]byte("[]"))
+	} else {
+		response, _ := json.Marshal(activityList)
+		_, _ = w.Write(response)
+	}
 }
 
 func getStudent(r *http.Request) (student.Student, error) {
@@ -32,8 +39,14 @@ func ParticipatingActivitiesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	activityList := activity.FetchParticipatingActivities(studentObject)
-	response, _ := json.Marshal(activityList)
-	_, _ = w.Write(response)
+	// Go is kidding
+	// @see https://github.com/golang/go/issues/26866
+	if len(activityList) == 0 {
+		_, _ = w.Write([]byte("[]"))
+	} else {
+		response, _ := json.Marshal(activityList)
+		_, _ = w.Write(response)
+	}
 }
 
 func TakePartHandler(w http.ResponseWriter, r *http.Request) {

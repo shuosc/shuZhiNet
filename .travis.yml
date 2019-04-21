@@ -1,5 +1,8 @@
 services:
   - docker
+addons:
+  ssh_known_hosts: cloud.shu.xn--io0a7i
+
 jobs:
   include:
     - stage: build
@@ -9,3 +12,13 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker tag shu-zhi-net-backend $DOCKER_USERNAME/shu-zhi-net-backend
         - docker push $DOCKER_USERNAME/shu-zhi-net-backend
+    - stage: deploy
+      language: minimal
+      before_install:
+        - openssl aes-256-cbc -K $encrypted_8d5e6bafb8c3_key -iv $encrypted_8d5e6bafb8c3_iv
+          -in deploy_rsa.enc -out deploy_rsa -d
+        - eval "$(ssh-agent -s)"
+        - chmod 600 ./deploy_rsa
+        - ssh-add ./deploy_rsa
+      script:
+        - ssh -i ./deploy_rsa root@cloud.shu.xn--io0a7i ./deploy.sh backend $DOCKER_USERNAME/shu-zhi-net-backend:$TRAVIS_BUILD_ID
