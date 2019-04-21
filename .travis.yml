@@ -10,7 +10,7 @@ jobs:
       script:
         - docker build . -t shu-zhi-net-backend
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker tag shu-zhi-net-backend $DOCKER_USERNAME/shu-zhi-net-backend
+        - docker tag shu-zhi-net-backend $DOCKER_USERNAME/shu-zhi-net-backend:$TRAVIS_BUILD_ID
         - docker push $DOCKER_USERNAME/shu-zhi-net-backend
     - stage: deploy
       language: minimal
