@@ -56,7 +56,7 @@ func TakePartHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var input struct {
-		ActivityId  string `json:"activity_id"`
+		ActivityId  string `json:"id"`
 		PhoneNumber string `json:"phone_number"`
 		MailAddress string `json:"mail_address"`
 	}
