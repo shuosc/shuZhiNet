@@ -11,6 +11,7 @@ import (
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var input struct {
 		Username string `json:"username"`
 		Password string `json:"password"`

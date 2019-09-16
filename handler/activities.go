@@ -35,6 +35,7 @@ func getStudent(r *http.Request) (student.Student, error) {
 func ParticipatingActivitiesHandler(w http.ResponseWriter, r *http.Request) {
 	studentObject, err := getStudent(r)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(403)
 		return
 	}
@@ -52,6 +53,7 @@ func ParticipatingActivitiesHandler(w http.ResponseWriter, r *http.Request) {
 func TakePartHandler(w http.ResponseWriter, r *http.Request) {
 	studentObject, err := getStudent(r)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(403)
 		return
 	}
@@ -69,6 +71,7 @@ func TakePartHandler(w http.ResponseWriter, r *http.Request) {
 func OptOutHandler(w http.ResponseWriter, r *http.Request) {
 	studentObject, err := getStudent(r)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(403)
 		return
 	}

@@ -2,7 +2,6 @@ package activity
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"io/ioutil"
 	"net/http"
@@ -90,11 +89,9 @@ func FetchParticipatingActivities(student student.Student) []ParticipatedActivit
 	for _, activityJson := range responseJson.Data.ActivityInfo {
 		activityObject, err := activity.Get(strconv.Itoa(activityJson.Id))
 		if err != nil {
-			fmt.Println(activityJson)
 			startTime, _ := time.Parse("2006-01-02T15:04:05", activityJson.StartTime)
 			endTime, _ := time.Parse("2006-01-02T15:04:05", activityJson.EndTime)
 			signUpTime, _ := time.Parse("2006-01-02T15:04:05", activityJson.SignUpTime)
-			fmt.Println(startTime, endTime, signUpTime)
 			activityObject = activity.Activity{
 				Id:         strconv.Itoa(activityJson.Id),
 				TypeId:     activity.GetTypeByName(activityJson.TypeName).Id,

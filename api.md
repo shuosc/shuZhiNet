@@ -23,7 +23,7 @@
 ## 所有活动
 ### Request
 - method: `GET`
-- URL: `/all-activities`
+- URL: `/activities`
 
 ### Response
 ```json

@@ -8,6 +8,6 @@ FROM alpine
 MAINTAINER longfangsong@icloud.com
 COPY --from=builder /go/src/shuZhiNet/shuZhiNet /shuZhiNet
 WORKDIR /
-CMD ./shuZhiNet
 RUN export PORT=8000
+CMD ./shuZhiNet
 EXPOSE 8000
